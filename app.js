@@ -4,13 +4,9 @@ var names = require('./names');
 
 var TOTAL = 4;
 
-//console.log(names[0]);
-
-
-async function hit(name, email, cb) {
+async function hit(name, email, url, cb) {
 	console.log("email : ", email);
 	console.log("name: ", name);
-	// body...
 	setTimeout(function (argument) {
 		return cb();
 	}, 5000);
@@ -18,7 +14,7 @@ async function hit(name, email, cb) {
 		headless: true,
 	});
 	const page = await browser.newPage();
-	await page.goto('https://wn.nr/7t5hSS', {
+	await page.goto(url, {
 		waitUntil: 'load',
 		timeout: 0
 	});
@@ -58,7 +54,6 @@ async function hit(name, email, cb) {
 
 
 function generate_email(name) {
-	console.log("~~2~~");
 
 	var min = 10000;
 	var max = 100000000;
@@ -74,7 +69,6 @@ function generate_email(name) {
 	name = name.replace('.', '');
 
 	var out = name.split(' ');
-	//console.log(out);
 	out.push(Math.floor(Math.random() * 1000));
 	if (Math.floor(Math.random() * 2)) {
 		out.push(random1);
@@ -91,7 +85,6 @@ function generate_email(name) {
 	out.sort(function () {
 		return .5 - Math.random();
 	});
-	//console.log(out);
 	if (out[0] == '.' || out[0] == '-') {
 		out[0] = '1';
 	}
@@ -109,27 +102,22 @@ function generate_email(name) {
 
 var count = 0;
 (async function () {
+	var url = process.env.URL || "https://wn.nr/7t5hSS";
 
 	names.sort(function () {
 		return .5 - Math.random();
 	});
-	//console.log(names);
-
-
 
 	async1.eachSeries(names, function (user, callback) {
 		if (count > TOTAL) return callback();
 		count++;
-		console.log("~~1~~~");
-
 		var name = user.name;
 		var email = generate_email(name);
 		name = name.replace('/', '');
 		name = name.replace('@', '');
 		name = name.replace(',', '');
 		name = name.replace('\\', '');
-		//return callback();
-		hit(name, email, function (err, res) {
+		hit(name, email, url , function (err, res) {
 			console.log(err, res);
 			setTimeout(function () {
 				return callback()
